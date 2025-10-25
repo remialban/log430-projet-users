@@ -25,7 +25,7 @@ jobs:
 
       - name: Setup bdd postgres
         run: |
-          docker run -d --name postgres-test -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=transactions_db -p 5435:5432 postgres:16
+          docker run -d --name postgres-test -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=users_db -p 5435:5432 postgres:16
           sleep 10
       - name: Run tests
         run: mvn -Dtest=*Test test
