@@ -71,13 +71,19 @@ public class AuthentificationController {
             DecodedJWT decodedJWT = jwtVerifier.verify(token);
             String userId = decodedJWT.getClaim("email").asString();
             String role = decodedJWT.getClaim("role").asString();
+            if (role.equals("SERVICE")) {
+                return ResponseEntity.ok(new Response<User>(null, null));
+            }
             String expiresAt = decodedJWT.getClaim("expiresAt").asString();
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime expiresAtDate = LocalDateTime.ofEpochSecond(Long.parseLong(expiresAt) / 1000, 0, java.time.ZoneOffset.UTC);
 
+
             if (now.isAfter(expiresAtDate)) {
                 return ResponseEntity.status(401).body(new Response<>(null, "Token expired"));
             }
+
+
 
             User user = this.userRepository.findByEmail(userId).get();
             if (user == null) {
@@ -87,7 +93,7 @@ public class AuthentificationController {
             return ResponseEntity.ok(new Response<User>(user, null));
 
         } catch (JWTVerificationException exception) {
-            return ResponseEntity.status(401).body(new Response<>(null, "Invalid token"));
+            return ResponseEntity.status(401).body(new Response<>(null, "Invalid token:" + exception.getMessage()));
         }
 
         // get payload json
