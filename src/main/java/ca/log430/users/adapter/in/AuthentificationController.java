@@ -46,6 +46,7 @@ public class AuthentificationController {
 
             payload.put("email", user.email);
             payload.put("role", "USER");
+            payload.put("userId", String.valueOf(userFound.getId()));
             payload.put("expiresAt", String.valueOf(System.currentTimeMillis() + 3600_000));
 
             String token = JWT.create()

@@ -2,6 +2,7 @@ package ca.log430.users.domain.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
+import org.springframework.data.annotation.ReadOnlyProperty;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -12,6 +13,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ReadOnlyProperty
     private Integer id;
 
 
