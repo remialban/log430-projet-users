@@ -1,6 +1,7 @@
 package ca.log430.users.ports.out;
 
 import ca.log430.users.domain.model.User;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface UserRepositoryOut extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmail(String email);
 
+    @Override
+    Optional<User> findById(Integer integer);
 }

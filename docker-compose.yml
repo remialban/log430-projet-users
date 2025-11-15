@@ -1,17 +1,32 @@
-version: '3.9'
-
 services:
   postgres:
     image: postgres:16
     container_name: postgres-users
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: users_db
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data_users:/var/lib/postgresql/data
+    networks:
+      - usernet
+
+  redis:
+    image: redis:8.2.3
+    container_name: redis-users
+    restart: unless-stopped
+    ports:
+      - "6379:6379"           # expose sur l'hôte (optionnel si vous n'en avez pas besoin)
+    volumes:
+      - redis-data:/data      # persistance des données
+    command: [ "redis-server"]
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "changeme", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - usernet
 
@@ -20,15 +35,46 @@ services:
     container_name: user-service
     depends_on:
       - postgres
+      - redis
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/users_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     ports:
       - "8080:8080"
     networks:
       - usernet
+
+  mailserver:
+    image: ghcr.io/docker-mailserver/docker-mailserver:latest
+    container_name: mailserver
+    # Provide the FQDN of your mail server here (Your DNS MX record should point to this value)
+    hostname: mail.example.com
+    ports:
+      - "25:25"
+      - "465:465"
+      - "587:587"
+      - "993:993"
+    volumes:
+      - ./docker-data/dms/mail-data/:/var/mail/
+      - ./docker-data/dms/mail-state/:/var/mail-state/
+      - ./docker-data/dms/mail-logs/:/var/log/mail/
+      - ./docker-data/dms/config/:/tmp/docker-mailserver/
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - ENABLE_RSPAMD=1
+      - ENABLE_CLAMAV=1
+      - ENABLE_FAIL2BAN=1
+    cap_add:
+      - NET_ADMIN # For Fail2Ban to work
+    restart: always
+
 
 networks:
   usernet:
@@ -36,3 +82,4 @@ networks:
 
 volumes:
   postgres_data_users:
+  redis-data:

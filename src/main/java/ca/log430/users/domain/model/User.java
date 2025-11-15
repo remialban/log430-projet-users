@@ -3,6 +3,7 @@ package ca.log430.users.domain.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
 import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDate;
 import java.util.Date;
