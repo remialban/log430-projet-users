@@ -29,6 +29,9 @@ public class User {
     @Past(message = "La date de naissance doit être dans le passé")
     private LocalDate birthDate;
 
+    @Version
+    private Long version;
+
     public User(String email, String hashedPassword, String name, String address, LocalDate birthDate) {
         this.email = email;
         this.hashedPassword = hashedPassword;
