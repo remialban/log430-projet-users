@@ -30,7 +30,7 @@ services:
     networks:
       - usernet
 
-  transaction-service:
+  user-service:
     build: .
     container_name: user-service
     depends_on:
@@ -50,31 +50,58 @@ services:
       - "8080:8080"
     networks:
       - usernet
+#  kafka:
+#    image: confluentinc/cp-kafka:7.5.0
+#    hostname: kafka
+#    container_name: kafka
+#    ports:
+#      - "9092:9092"
+#      - "9101:9101"
+#    environment:
+#      CLUSTER_ID: "o0oqgfJkSRKy30HkVsAjBg"
+#      KAFKA_NODE_ID: 1
+#      KAFKA_PROCESS_ROLES: "broker,controller"
+#      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
+#      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+#      KAFKA_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://0.0.0.0:9092,CONTROLLER://kafka:29093"
+#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT"
+#      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://kafka:9092"
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+#      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+#      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+#      KAFKA_JMX_PORT: 9101
+#      KAFKA_JMX_HOSTNAME: kafka
+#      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+#    healthcheck:
+#      test: kafka-broker-api-versions --bootstrap-server kafka:9092 || exit 1
+#      interval: 10s
+#      timeout: 10s
+#      retries: 5
+#    networks:
+#      - usernet
 
-  mailserver:
-    image: ghcr.io/docker-mailserver/docker-mailserver:latest
-    container_name: mailserver
-    # Provide the FQDN of your mail server here (Your DNS MX record should point to this value)
-    hostname: mail.example.com
+  kafka:
+    image: apache/kafka:latest
+    container_name: broker
     ports:
-      - "25:25"
-      - "465:465"
-      - "587:587"
-      - "993:993"
-    volumes:
-      - ./docker-data/dms/mail-data/:/var/mail/
-      - ./docker-data/dms/mail-state/:/var/mail-state/
-      - ./docker-data/dms/mail-logs/:/var/log/mail/
-      - ./docker-data/dms/config/:/tmp/docker-mailserver/
-      - /etc/localtime:/etc/localtime:ro
+      - "9092:9092"
+      - "9093:9093"
     environment:
-      - ENABLE_RSPAMD=1
-      - ENABLE_CLAMAV=1
-      - ENABLE_FAIL2BAN=1
-    cap_add:
-      - NET_ADMIN # For Fail2Ban to work
-    restart: always
-
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+    networks:
+      - usernet
 
 networks:
   usernet:

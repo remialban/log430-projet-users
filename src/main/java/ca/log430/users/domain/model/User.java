@@ -32,6 +32,9 @@ public class User {
     @Version
     private Long version;
 
+    @ReadOnlyProperty
+    private UserStatus status = UserStatus.PENDING;
+
     public User(String email, String hashedPassword, String name, String address, LocalDate birthDate) {
         this.email = email;
         this.hashedPassword = hashedPassword;
@@ -86,5 +89,13 @@ public class User {
 
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
     }
 }

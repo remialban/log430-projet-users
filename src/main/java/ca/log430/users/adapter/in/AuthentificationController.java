@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Optional;
 
+import static ca.log430.users.domain.model.UserStatus.ACTIVE;
+
 @RestController
 @RequestMapping("/users/auth")
 public class AuthentificationController {
@@ -72,6 +74,8 @@ public class AuthentificationController {
             DecodedJWT decodedJWT = jwtVerifier.verify(token);
             String userId = decodedJWT.getClaim("email").asString();
             String role = decodedJWT.getClaim("role").asString();
+
+
             if (role.equals("SERVICE")) {
                 return ResponseEntity.ok(new Response<User>(null, null));
             }
@@ -91,6 +95,9 @@ public class AuthentificationController {
                 return ResponseEntity.status(401).body(new Response<>(null, "User not found"));
             }
 
+            if (user.getStatus() != ACTIVE) {
+                return ResponseEntity.status(401).body(new Response<>(null, "User not active"));
+            }
             return ResponseEntity.ok(new Response<User>(user, null));
 
         } catch (JWTVerificationException exception) {

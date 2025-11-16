@@ -23,7 +23,7 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    @Cacheable(value = "user", key = "#email")
+    @Cacheable(value = "user", key = "#email", unless = "#result == null")
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
