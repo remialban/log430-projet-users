@@ -19,11 +19,11 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (userRepository.count() == 0) {
-            User user = new User("alice@example.com", "passwordAlice", "Alice", "Street 1", LocalDate.of(2000, 1, 1);
+            User user = new User("alice@example.com", "passwordAlice", "Alice", "Street 1", LocalDate.of(2000, 1, 1));
             user.setStatus(UserStatus.ACTIVE);
             userRepository.save(user);
 
-            User user2 = new User("bob@example.com", "passwordBob", "Boob", "Street 2", LocalDate.of(2000, 2, 1);
+            User user2 = new User("bob@example.com", "passwordBob", "Boob", "Street 2", LocalDate.of(2000, 2, 1));
             user2.setStatus(UserStatus.ACTIVE);
             userRepository.save(user2);
 
