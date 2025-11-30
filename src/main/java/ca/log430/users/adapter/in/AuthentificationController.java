@@ -4,6 +4,7 @@ import ca.log430.users.Response;
 import ca.log430.users.domain.model.TokenResponse;
 import ca.log430.users.domain.model.User;
 import ca.log430.users.domain.model.UserCredential;
+import ca.log430.users.domain.model.UserStatus;
 import ca.log430.users.ports.out.UserRepositoryOut;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -42,6 +43,10 @@ public class AuthentificationController {
             }
 
             User userFound =  userEntity.get();
+
+            if (userFound.getStatus() != ACTIVE) {
+                return  ResponseEntity.status(401).body(new Response<>(null, "The account must be on status : ACTIVE"));
+            }
             if (!userFound.getHashedPassword().equals(user.password)) {
                 return ResponseEntity.status(401).body(new Response<>(null, "Invalid password"));
             }
