@@ -50,7 +50,7 @@ services:
       DATABASE_NAME: ${DATABASE_NAME}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      KAFKA_HOST: kafka
+      KAFKA_HOST: broker
       KAFKA_PORT: 9092
 
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
