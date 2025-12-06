@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,6 +84,31 @@ public class UserController implements UserControllerIn {
             return new ResponseEntity<>(new Response<User>(null, "User not found"), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(new Response<User>(user, null), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Response<User>> updateUser(@PathVariable Integer id, @RequestBody Map<String, Object> updates) {
+        User user = userService.findById(id);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response<>(null, "User not found"));
+        }
+
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "name":
+                    user.setName((String) value);
+                    break;
+                case "address":
+                    user.setAddress((String) value);
+                    break;
+                case "birthDate":
+                    user.setBirthDate(LocalDate.parse((String) value));
+                    break;
+            }
+        });
+
+        userService.save(user);
+        return ResponseEntity.ok(new Response<>(user, null));
     }
 
     @GetMapping("/validate")

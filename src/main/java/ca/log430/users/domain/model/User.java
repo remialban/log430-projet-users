@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Past;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.redis.core.RedisHash;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -29,6 +30,8 @@ public class User {
     @Past(message = "La date de naissance doit être dans le passé")
     private LocalDate birthDate;
 
+    private BigDecimal balance;
+
     @Version
     private Long version;
 
@@ -41,6 +44,7 @@ public class User {
         this.name = name;
         this.address = address;
         this.birthDate = birthDate;
+        this.balance = BigDecimal.ZERO;
     }
 
     public User() {
@@ -97,5 +101,13 @@ public class User {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
     }
 }

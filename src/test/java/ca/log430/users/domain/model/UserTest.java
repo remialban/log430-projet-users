@@ -6,6 +6,7 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,12 +30,14 @@ public class UserTest {
                 "123 Main St, Anytown, USA",
                 java.time.LocalDate.of(1990, 1, 1)
         );
+        user.setBalance(new BigDecimal("0"));
 
         assert user.getEmail().equals("john.doe@lorem.fr");
         assert user.getHashedPassword().equals("hashed_password_123");
         assert user.getName().equals("John Doe");
         assert user.getAddress().equals("123 Main St, Anytown, USA");
         assert user.getBirthDate().equals(java.time.LocalDate.of(1990, 1, 1));
+        assert user.getBalance().equals(new BigDecimal("0"));
 
         // check validation :
         var violations = validator.validate(user);
@@ -51,6 +54,7 @@ public class UserTest {
                 "123 Main St, Anytown, USA",
                 java.time.LocalDate.of(5000, 1, 1)
         );
+        user.setBalance(new BigDecimal("0"));
 
         // check validation :
         var violations = validator.validate(user);
